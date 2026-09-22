@@ -48,6 +48,7 @@ You have two ways to generate the APK:
 
 - **Package Name / App ID:** `com.edutrack.app`
 - **Application Name:** `EduTrack`
+- **Android Target:** Android 15 (API 35) & Java JDK 21
 - **Build Output:** `android/app/build/outputs/apk/debug/app-debug.apk`
 - **Configuration File:** `capacitor.config.json`
 - **Workflow File:** `.github/workflows/build-apk.yml`
@@ -56,7 +57,7 @@ You have two ways to generate the APK:
 If you have Android Studio installed locally:
 ```bash
 npm run build
-npx cap add android
+npx cap sync android
 npx cap open android
 ```
 Then click **Run** or **Build > Build Bundle(s) / APK(s) > Build APK(s)** in Android Studio.
