@@ -1,0 +1,6 @@
+{
+  "name": "EduTrack",
+  "description": "Comprehensive school marks grading, attendance registers, syllabus tracker, and academic executive dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
