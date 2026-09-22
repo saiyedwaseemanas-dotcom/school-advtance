@@ -22,6 +22,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
       - name: Set up Node.js (v20)
         uses: actions/setup-node@v4
         with:
@@ -33,17 +39,19 @@ jobs:
       - name: Build web application
         run: npm run build
 
-      - name: Add and sync Capacitor Android
+      - name: Sync Capacitor Android
+        env:
+          CI: 'true'
         run: |
           if [ ! -d "android" ]; then
-            npx cap add android
+            npx --yes @capacitor/cli add android
           fi
-          npx cap sync android
+          npx --yes @capacitor/cli sync android
 
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Build Debug APK with Gradle
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon --stacktrace
