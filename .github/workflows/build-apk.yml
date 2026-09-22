@@ -28,25 +28,52 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          echo "Installing npm dependencies..."
+          npm install --legacy-peer-deps
 
       - name: Build web application
-        run: npm run build
+        run: |
+          echo "Building Vite application..."
+          npm run build
 
       - name: Sync Capacitor Android
         env:
           CI: 'true'
           CAPACITOR_TELEMETRY: '0'
         run: |
+          echo "Checking Capacitor Android project..."
           if [ ! -d "android" ]; then
+            echo "Adding Android platform..."
             npx --yes @capacitor/cli add android
           fi
+          echo "Syncing web assets to Android platform..."
           npx --yes @capacitor/cli sync android
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x android/gradlew
+      - name: Configure Android SDK & Gradle Wrapper
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: |
+          echo "Configuring local.properties with Android SDK location..."
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          cat android/local.properties
+
+          echo "Checking Gradle wrapper jar..."
+          mkdir -p android/gradle/wrapper
+          if [ ! -f "android/gradle/wrapper/gradle-wrapper.jar" ] || [ ! -s "android/gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "gradle-wrapper.jar not found or empty. Downloading wrapper jar..."
+            curl -sLo android/gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.14.3/gradle/wrapper/gradle-wrapper.jar || \
+            curl -sLo android/gradle/wrapper/gradle-wrapper.jar https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.14.3/gradle-wrapper-8.14.3.jar
+          fi
+          ls -la android/gradle/wrapper/
+
+          echo "Making gradlew executable..."
+          chmod +x android/gradlew
 
       - name: Build Debug APK with Gradle
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon --stacktrace
