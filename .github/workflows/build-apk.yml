@@ -26,15 +26,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build web application
         run: npm run build
 
-      - name: Add and sync Capacitor Android project
+      - name: Add and sync Capacitor Android
         run: |
           if [ ! -d "android" ]; then
             npx cap add android
@@ -47,7 +46,7 @@ jobs:
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
